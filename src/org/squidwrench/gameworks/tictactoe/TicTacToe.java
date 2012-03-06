@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -40,7 +39,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	public String playername = "X", startingplayer = "X";
 	public int rows = 3, cols = 3, moves, moveslimit = rows * cols, xscore, oscore, tscore, toechosen;
 	public int pointcount[] = new int[8]; //R1,R2,R3,C1,C2,C3,DD,DU = ways to win
-	public int squaremoves[] = new int[13]; //0 = first move, positive = O, negative = X, TL,TM,TR,ML,MM,MR,BL,BM,BR
+	public int squaremoves[] = new int[15]; //0 = first move, positive = O, negative = X, TL,TM,TR,ML,MM,MR,BL,BM,BR
 	public boolean gameover = false, computeropponent = false, toe = false;
 	public final int row1[] =  {R.id.TopLeft,		R.id.TopRight,		R.id.TopMiddle};
 	public final int row2[] =  {R.id.MiddleMiddle,R.id.MiddleLeft,	R.id.MiddleRight};
@@ -63,14 +62,12 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	private SensorManager sensMgr;
 	private Sensor accelerometer;
     private static SoundPool sounds;
-    private static int xbeep, obeep, toebeep, gamewin, gametie; 
-    //private static MediaPlayer music;
+    private static int xbeep, obeep, toebeep, gamewin, gametie, complaugh; 
     private static boolean sound = true;
-    private static MediaPlayer trashTalk;
     public Random rand = new Random();
     //private static final String SERVLET_URL = "http://";
     public boolean online = false;
-    //public final int buttonimages[] = {R.drawable.bigo, R.drawable.bigx, R.drawable.bigxxx, R.drawable.bigooo, R.drawable.bigtoe};
+    //public final int buttonimages[] = {R.drawable.bigo, R.drawable.bigx, R.drawable.bigxxx, R.drawable.bigooo, R.drawable.bigtoejam};
     public int viewWidth = 0;
     public int viewHeight = 0;
     public int orient; //0 = vertical, 1 = horizontal
@@ -86,22 +83,16 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		sensMgr = (SensorManager)getSystemService(SENSOR_SERVICE);
         accelerometer = sensMgr.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         setContentView(R.layout.main);
-        trashTalk = MediaPlayer.create(this, R.raw.maybeyoushould);
-        //xbeep = MediaPlayer.create(context, R.raw.ttt_x);
-        //obeep = MediaPlayer.create(context, R.raw.ttt_o);
+        //trashTalk = MediaPlayer.create(this, R.raw.maybeyoushould);
 	    sounds = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
 	    xbeep = sounds.load(this, R.raw.ttt_x, 1);
 	    obeep = sounds.load(this, R.raw.ttt_o, 1);
-	    toebeep = sounds.load(this, R.raw.toe,1);
+	    toebeep = sounds.load(this, R.raw.toejam,1);
 	    gamewin = sounds.load(this, R.raw.gamewin, 1);
 	    gametie = sounds.load(this, R.raw.gametie, 1);
-	    //music = MediaPlayer.create(context, R.raw.something);
+	    complaugh = sounds.load(this, R.raw.computerlaugh, 1);
     
 	    Display display = getWindowManager().getDefaultDisplay();
-	    //Point size = new Point();
-	    //display.getSize(size);
-	    //int dwidth = size.x;
-	    //int dheight = size.y;
 	    int dwidth = display.getWidth();
 	    int dheight = display.getHeight();
 	    int setsize;
@@ -252,7 +243,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    		int pvalue;
 	    		int dvalue;
 	    		if (toe) {
-	    			if  (moves == 2 || moves == 6) {
+	    			if  (moves == 2 || moves == 6 || moves == 10) {
 	    				int randomsquare = rand.nextInt(squarestaken.size());
 	    				toechosen = squarestaken.get(randomsquare);
 	    				moveslimit += 2;
@@ -282,14 +273,17 @@ public class TicTacToe extends Activity implements SensorEventListener {
 				TextView tvs = (TextView) findViewById(R.id.textViewScore);
 				if (moves > 4) {
 		    		if (checkForWinCondition()) {
-		    			playSound(gamewin);
 		    			buttonGlow(pvalue * 3);
-		    			if (playername.equals("X"))
+		    			if (playername.equals("X")) {
 		    				xscore += 1;
+		    				playSound(gamewin);
+		    			}
 		    			else {
 		    				oscore += 1; 
 		    				if (computeropponent == true)
-		    					playComputerWinTrashTalk();
+		    					playSound(complaugh);
+		    				else
+		    					playSound(gamewin);
 		    			}
 		    			tv.setText("Player " + playername + " WINS!");
 		    			tvs.setText("Click Any Square To Start New Game");
@@ -320,10 +314,12 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    		if (playername.equals("O") && computeropponent == true)
 	    			computerMove();    		
 	    		else if (toe) {	
-	    			if (moves == 3 || moves == 7)
+	    			if (moves == 3 || moves == 7 || moves == 11)
 	    				playToe();
-	    			if (moves == 5 || moves == 9) 		
+	    			if (moves == 5 || moves == 9 || moves == 13) {	
+	    				showScore();
 	    				cleanToe();
+	    			}
 	    		} 
 	    		else if (online) {
 	    			buttonsClickable(false);
@@ -496,12 +492,6 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		Toast toast = Toast.makeText(this, text, duration);
 		toast.show();
 	}
-	
- 	public static void playComputerWinTrashTalk() {
-	    if (!sound) return; // if sound is turned off no need to continue
-		trashTalk.start();
-	    //sounds.play(computerwintrashtalk, 1, 1, 1, 0, 1);
-	}
  	
 	public static void playSound(int soundid) {
 	    if (!sound) return; // if sound is turned off no need to continue
@@ -586,7 +576,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    
 	        ImageButton button;
 	        Integer mov;
-	        for (int s = 0; s < 13; s++) {
+	        for (int s = 0; s < 15; s++) {
 	            mov = convertedIntArray[s];
 	            if (mov == 0) 
 	            	break;
@@ -594,10 +584,10 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	            	playername = "X";
 	            else
 	            	playername = "O";
-	            if (toehold && (moves == 5 || moves == 9)) {
+	            if (toehold && (moves == 5 || moves == 9 || moves == 13)) {
 	            	cleanToe();
 	            }
-	            if (toehold && (moves == 3 || moves == 7)) {
+	            if (toehold && (moves == 3 || moves == 7 || moves == 11)) {
 	                toechosen = mov;
 		            moveslimit += 2;
 		            playToe();
@@ -669,17 +659,11 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	public void cleanToe() {
 		squaresremaining.add(new Integer(toechosen));
 		squarestaken.remove(new Integer(toechosen));
-		
-		// SLEEP 1 SEC
-//	    Handler handler = new Handler(); 
-//	    handler.postDelayed(new Runnable() { 
-//	         public void run() { 
-	        	ImageButton button = (ImageButton) findViewById(toechosen);
-	     		button.setBackgroundDrawable(getResources().getDrawable(R.drawable.biggray));
-	     		button.setTag(R.drawable.biggray);
-	     		playSound(toebeep);
-//	         } 
-//	    }, 1000); 
+
+    	ImageButton button = (ImageButton) findViewById(toechosen);
+ 		button.setBackgroundDrawable(getResources().getDrawable(R.drawable.biggray));
+ 		button.setTag(R.drawable.biggray);
+ 		playSound(toebeep);
 	}
 
 	public void playToe() {
@@ -696,16 +680,12 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		squaremoves[moves] = toechosen;
 		moves += 1;
 		
-		// SLEEP 1 SEC
-//	    Handler handler = new Handler(); 
-//	    handler.postDelayed(new Runnable() { 
-//	         public void run() { 
-	        	 button = (ImageButton) findViewById(toechosen);
-	        	 button.setBackgroundDrawable(getResources().getDrawable(R.drawable.bigtoe));
-	        	 button.setTag(R.drawable.bigtoe);
-	     		 playSound(toebeep);
-//		         } 
-//		    }, 1000); 
+    	button = (ImageButton) findViewById(toechosen);
+    	button.setBackgroundDrawable(getResources().getDrawable(R.drawable.bigtoejam));
+    	button.setTag(R.drawable.bigtoejam);
+ 		playSound(toebeep);
+	    TextView tvs = (TextView) findViewById(R.id.textViewScore);
+	    tvs.setText("Toe Jam!");
  	}
  }
  

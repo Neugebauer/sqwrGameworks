@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
+        android:layout_marginTop="5dip"
         android:gravity="center"
         android:text="TicTacToeJam"
         android:textColor="#000000"
@@ -19,16 +19,16 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
+        android:layout_marginTop="5dip"
         android:gravity="center"
         android:text="Presented By"
         android:textColor="#000000"
-        android:textSize="20dp" />
+        android:textSize="15dp" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
+        android:layout_marginTop="5dip"
         android:text="Squidwrench.org"
         android:autoLink="all"
         android:textColor="#000000"
@@ -37,7 +37,7 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Add Yourname or nickname \nBrian Neugebauer \nMore Names"
+        android:text="Add Your name or nickname \nBrian Neugebauer \nMore Names"
         android:autoLink="all"
         android:textColor="#000000"
         android:textSize="10dp" />
@@ -46,16 +46,23 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
-        android:layout_weight="0.43"
-        android:text="Sounds \nfreesound.org \nSamuel Lourenço"
+        android:text="Graphics: \nBrian Neugebauer \nclipartsfree.net (netalloy)"
         android:textColor="#000000"
-        android:textSize="9dp" />
+        android:textSize="8dp" />
     
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
-        android:gravity="center"
+        android:text="Sounds: \nfreesound.org (Samuel Lourenço, Joel Azzopardi, Pierre Cartoon Sounds, Cabeeno Rossley, notchfilter, johnnypanic)"
+        android:textColor="#000000"
+        android:textSize="8dp" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip"
+        android:gravity="bottom|center"
         android:layout_gravity="bottom"
         android:text="\u00A9 2012"
         android:textColor="#000000"

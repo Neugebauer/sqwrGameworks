@@ -13,7 +13,7 @@ public class Splash extends Activity{
 	protected void onCreate(Bundle TTTTime) {
 		super.onCreate(TTTTime);
 		setContentView(R.layout.splash);
-		splashMusic = MediaPlayer.create(Splash.this, R.raw.splashsound);
+		splashMusic = MediaPlayer.create(Splash.this, R.raw.splashjam);
 		splashMusic.start();
 		Thread timer = new Thread(){
 			@Override
