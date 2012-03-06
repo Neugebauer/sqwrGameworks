@@ -3,5 +3,7 @@
     <item android:id="@+id/startOver" android:title="@string/startOver"></item>
     <item android:id="@+id/saveGame" android:title="@string/saveGame"></item>
     <item android:id="@+id/loadGame" android:title="@string/loadGame"></item>
+    <item android:id="@+id/clearScore" android:title="@string/clearScore"></item>
+    <item android:id="@+id/credits" android:title="@string/credits"></item>
 
 </menu>

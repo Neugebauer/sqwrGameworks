@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -18,13 +19,20 @@ import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +74,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
     public int viewWidth = 0;
     public int viewHeight = 0;
     public int orient; //0 = vertical, 1 = horizontal
+    private PopupWindow pwcredits;
 	//private static final String TAG = "MyActivity"; 
 	
     /** Called when the activity is first created. */
@@ -354,6 +363,12 @@ public class TicTacToe extends Activity implements SensorEventListener {
     			SharedPreferences settings = getSharedPreferences("SAVEGAME", 0);        
        			loadGame(settings.getString("gmoves",""),settings.getBoolean("gameover",gameover),settings.getString("playername",playername),settings.getBoolean("vscomputer",computeropponent),settings.getBoolean("toe",toe),settings.getInt("xwins",xscore),settings.getInt("owins",oscore),settings.getInt("twins",tscore));
     			return true;
+    		case R.id.clearScore:
+    			clearScore();
+    			return true;
+    		case R.id.credits:
+    			showCredits();
+    			return true;
     		default:
     			return super.onOptionsItemSelected(item);
     	}
@@ -615,6 +630,41 @@ public class TicTacToe extends Activity implements SensorEventListener {
     		startOver();
     	}
 	}
+	
+	public void clearScore() {
+		xscore = 0;
+		oscore = 0;
+		tscore = 0;
+		showScore();
+	}
+	
+	private void showCredits() {
+	    try {
+	    	//http://www.mobilemancer.com/2011/01/08/popup-window-in-android/
+	        //We need to get the instance of the LayoutInflater, use the context of this activity
+	        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        //Inflate the view from a predefined XML layout
+	        View layout = inflater.inflate(R.layout.credits,(ViewGroup) findViewById(R.id.popup_credits));
+	        // create a 300px width and 470px height PopupWindow
+	        pwcredits = new PopupWindow(layout, 300, 470, true);
+	        
+//	        TextView tvcredits = (TextView) findViewById(R.id.tvcredits);      
+//	        tvcredits.setText("Squidwrench.org" +  "\r\n" +  "add your name" +  "\r\n" +  "Brian Neugebauer");
+	        // display the popup in the center
+	        pwcredits.showAtLocation(layout, Gravity.CENTER, 0, 0);
+	 
+	        layout.setOnClickListener(cancel_button_click_listener);
+	 
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	}
+	 
+	private OnClickListener cancel_button_click_listener = new OnClickListener() {
+	    public void onClick(View v) {
+	        pwcredits.dismiss();
+	    }
+	};
 	
 	public void cleanToe() {
 		squaresremaining.add(new Integer(toechosen));

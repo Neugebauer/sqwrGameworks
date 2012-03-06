@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/popup_credits"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/graypopup"
+    android:orientation="vertical"
+    android:padding="10dip" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip"
+        android:gravity="center"
+        android:text="TicTacToeJam"
+        android:textColor="#000000"
+        android:textSize="25dp" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip"
+        android:gravity="center"
+        android:text="Presented By"
+        android:textColor="#000000"
+        android:textSize="20dp" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip"
+        android:text="Squidwrench.org"
+        android:autoLink="all"
+        android:textColor="#000000"
+        android:textSize="10dp" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Yourname or nickname \nBrian Neugebauer \nMore Names"
+        android:autoLink="all"
+        android:textColor="#000000"
+        android:textSize="10dp" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip"
+        android:layout_weight="0.43"
+        android:text="Sounds \nfreesound.org \nSamuel Lourenço"
+        android:textColor="#000000"
+        android:textSize="9dp" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip"
+        android:gravity="center"
+        android:layout_gravity="bottom"
+        android:text="\u00A9 2012"
+        android:textColor="#000000"
+        android:textSize="10dp" />
+        
+    
+</LinearLayout>
