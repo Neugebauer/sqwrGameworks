@@ -11,5 +11,6 @@
     <string name="loadGame">Load Game</string>
     <string name="clearScore">Clear Score</string>
     <string name="credits">Credits</string>
+    <string name="toggleSound">Toggle Sound ON/OFF</string>
 
 </resources>

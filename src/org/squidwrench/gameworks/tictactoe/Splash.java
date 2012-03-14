@@ -4,10 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-
+/*
+Squidwrench.org
+Brian Neugebauer 2012
+Show splash image and play jingle
+*/
 public class Splash extends Activity{
 
-	//show splash image and play jingle
 	MediaPlayer splashMusic;
 	@Override
 	protected void onCreate(Bundle TTTTime) {

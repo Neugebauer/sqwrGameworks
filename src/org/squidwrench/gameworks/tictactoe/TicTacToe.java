@@ -14,7 +14,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
 import android.view.Display;
@@ -26,19 +25,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/*
+TiC Tac ToeJam
+Squidwrench.org 2012
+Brian Neugebauer,
+Code for traditional game with 2 players, play vs computer, and ToeJam game
+*/
+
 public class TicTacToe extends Activity implements SensorEventListener {
 	public String playername = "X", startingplayer = "X";
 	public int rows = 3, cols = 3, moves, moveslimit = rows * cols, xscore, oscore, tscore, toechosen;
-	public int pointcount[] = new int[8]; //R1,R2,R3,C1,C2,C3,DD,DU = ways to win
+	public int pointcount[] = new int[8]; //R1,R2,R3,C1,C2,C3,DD,DU = ways to win, 3 or -3 means a win
 	public int squaremoves[] = new int[15]; //0 = first move, positive = O, negative = X, TL,TM,TR,ML,MM,MR,BL,BM,BR
 	public boolean gameover = false, computeropponent = false, toe = false;
 	public final int row1[] =  {R.id.TopLeft,		R.id.TopRight,		R.id.TopMiddle};
@@ -49,11 +53,11 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	public final int col3[] =  {R.id.TopRight,	R.id.BottomRight,	R.id.MiddleRight};
 	public final int ddown[] = {R.id.MiddleMiddle,R.id.TopLeft,		R.id.BottomRight};
 	public final int dup[] =   {R.id.MiddleMiddle,R.id.TopRight,		R.id.BottomLeft};
-	public final int rcd[][] = {row1,row2,row3,col1,col2,col3,ddown,dup};
-	public final int tls[] = {0,3,6}, tms[] = {0,4}, trs[] = {0,5,7};
+	public final int rcd[][] = {row1,row2,row3,col1,col2,col3,ddown,dup}; //rcd = rows, cols, diagonals
+	public final int tls[] = {0,3,6}, tms[] = {0,4}, trs[] = {0,5,7}; //TLs = top left square, is used in pointcount(0,3,6)
 	public final int mls[] = {1,3}, mms[] = {1,4,6,7}, mrs[] = {1,5};
 	public final int bls[] = {2,3,7}, bms[] = {2,4}, brs[] = {2,5,6};
-	public final int inTrio[][] = {tls,tms,trs,mls,mms,mrs,bls,bms,brs};
+	public final int inTrio[][] = {tls,tms,trs,mls,mms,mrs,bls,bms,brs}; //way to lookup which pointcount values need updating
 	public final int corners[] = {R.id.TopLeft,R.id.TopRight,R.id.BottomLeft,R.id.BottomRight};
 	public final List<Integer> squares = new ArrayList<Integer>(Arrays.asList(R.id.TopLeft,R.id.TopMiddle,R.id.TopRight,R.id.MiddleLeft,R.id.MiddleMiddle,R.id.MiddleRight,R.id.BottomLeft,R.id.BottomMiddle,R.id.BottomRight)); //TL,TM,TR,ML,MM,MR,BL,BM,BR
 	public List<Integer> squaresremaining = new ArrayList<Integer>(Arrays.asList(R.id.TopLeft,R.id.TopMiddle,R.id.TopRight,R.id.MiddleLeft,R.id.MiddleMiddle,R.id.MiddleRight,R.id.BottomLeft,R.id.BottomMiddle,R.id.BottomRight)); //TL,TM,TR,ML,MM,MR,BL,BM,BR
@@ -65,33 +69,29 @@ public class TicTacToe extends Activity implements SensorEventListener {
     private static int xbeep, obeep, toebeep, gamewin, gametie, complaugh; 
     private static boolean sound = true;
     public Random rand = new Random();
-    //private static final String SERVLET_URL = "http://";
     public boolean online = false;
     //public final int buttonimages[] = {R.drawable.bigo, R.drawable.bigx, R.drawable.bigxxx, R.drawable.bigooo, R.drawable.bigtoejam};
     public int viewWidth = 0;
     public int viewHeight = 0;
     public int orient; //0 = vertical, 1 = horizontal
     private PopupWindow pwcredits;
-	//private static final String TAG = "MyActivity"; 
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);    
-        SharedPreferences settings = getSharedPreferences("PREF",0);
-        sound = settings.getBoolean("sound", true);
 		sensMgr = (SensorManager)getSystemService(SENSOR_SERVICE);
         accelerometer = sensMgr.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         setContentView(R.layout.main);
-        //trashTalk = MediaPlayer.create(this, R.raw.maybeyoushould);
-	    sounds = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-	    xbeep = sounds.load(this, R.raw.ttt_x, 1);
-	    obeep = sounds.load(this, R.raw.ttt_o, 1);
-	    toebeep = sounds.load(this, R.raw.toejam,1);
-	    gamewin = sounds.load(this, R.raw.gamewin, 1);
-	    gametie = sounds.load(this, R.raw.gametie, 1);
-	    complaugh = sounds.load(this, R.raw.computerlaugh, 1);
-    
+        
+        //Load sounds 
+        SharedPreferences settings = getSharedPreferences("PREF",0);
+        sound = settings.getBoolean("sound", true);
+        if (sound) {
+        	loadSounds();
+        }
+
+        //Get Dimensions of screen and size buttons based on that
 	    Display display = getWindowManager().getDefaultDisplay();
 	    int dwidth = display.getWidth();
 	    int dheight = display.getHeight();
@@ -114,6 +114,8 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    
 		showWhoseTurn();
 		showScore();
+		
+		//Set up Vs Computer checkbox
 		CheckBox cbAI =(CheckBox)findViewById(R.id.checkBoxAI);
 	    cbAI.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 	    	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
@@ -126,7 +128,8 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    			computeropponent = false;
 	    		}
 	    	}
-	    });     
+	    });  
+	    //Set up Toe checkbox
 	    CheckBox cbtoe =(CheckBox)findViewById(R.id.checkBoxToe);
 	    cbtoe.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 	    	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
@@ -163,6 +166,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
     
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+      //Save gamestate for orientation change or interruption by phonecall, etc
       savedInstanceState.putString("gmoves", Arrays.toString(squaremoves).replace("[", "").replace("]", "").replace(" ", ""));
       savedInstanceState.putBoolean("gameover", gameover);
       savedInstanceState.putString("playername", playername);
@@ -178,7 +182,6 @@ public class TicTacToe extends Activity implements SensorEventListener {
     public void onRestoreInstanceState(Bundle savedInstanceState) {
       super.onRestoreInstanceState(savedInstanceState);
       // Restore UI state from the savedInstanceState.
-      // This bundle has also been passed to onCreate.
       loadGame(savedInstanceState.getString("gmoves"),savedInstanceState.getBoolean("gameover"),savedInstanceState.getString("playername"),savedInstanceState.getBoolean("vscomputer"),savedInstanceState.getBoolean("toe"),savedInstanceState.getInt("xwins"),savedInstanceState.getInt("owins"),savedInstanceState.getInt("twins"));
     }
     
@@ -195,29 +198,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
     	sensMgr.unregisterListener(this);
     }
     
-    
-	public void playOnlineRegister() {
-		//createGameKey
-		//InsertGameKeyToGamesTableOfServletDB
-		//WaitForOpponentToArrive
-	} 
-    
-	public void playOnline() {
-		online = true;
-		buttonsClickable(false);
-		//WaitForServletToSayItsYourMove
-	}
-	
-	public void waitForOpponentsMove() {
-		//QueryServletDB
-		//Button.click()
-		buttonsClickable(true);
-	}
-	
-	public void reportMove(Integer squareid) {
-		//InsertMoveToMovesTableOfServletDB
-	}
-	
+
 	public void buttonsClickable(boolean clickable) {
 		ImageButton button;
 		for (Integer squareid : squares) {
@@ -225,12 +206,6 @@ public class TicTacToe extends Activity implements SensorEventListener {
 			button.setClickable(clickable);
 		}
 	}
-    
-	public void reportStats() {
-		//Update/InsertToPlayerTableRecordsTable()
-		//DeleteFromGamesTableMovesTable()
-	}
-	
 	
     //When button is clicked
 	public void claimSquare(View view) {
@@ -243,6 +218,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    		int pvalue;
 	    		int dvalue;
 	    		if (toe) {
+	    			//select random square that toe will step on after this move
 	    			if  (moves == 2 || moves == 6 || moves == 10) {
 	    				int randomsquare = rand.nextInt(squarestaken.size());
 	    				toechosen = squarestaken.get(randomsquare);
@@ -288,9 +264,6 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		    			tv.setText("Player " + playername + " WINS!");
 		    			tvs.setText("Click Any Square To Start New Game");
 		    			gameover = true;
-		    			if (online)
-		    				reportStats();
-		    			return;
 		    		}
 		    		else {
 		    			if (moves == moveslimit) {
@@ -299,9 +272,6 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		    				tscore += 1;
 		    				tvs.setText("Click Any Square To Start New Game");
 		    				gameover = true;
-		    				if (online)
-			    				reportStats();
-		    				return;
 		    			}
 		    		}
 				}
@@ -314,18 +284,15 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    		if (playername.equals("O") && computeropponent == true)
 	    			computerMove();    		
 	    		else if (toe) {	
+	    			//The toe drops
 	    			if (moves == 3 || moves == 7 || moves == 11)
 	    				playToe();
-	    			if (moves == 5 || moves == 9 || moves == 13) {	
+	    			//The toe leaves
+	    			else if (moves == 5 || moves == 9 || moves == 13) {	
 	    				showScore();
 	    				cleanToe();
 	    			}
 	    		} 
-	    		else if (online) {
-	    			buttonsClickable(false);
-	    			reportMove(squareid);
-	    			waitForOpponentsMove();
-	    		}
 	    	}
     	}
     }
@@ -365,6 +332,9 @@ public class TicTacToe extends Activity implements SensorEventListener {
     		case R.id.credits:
     			showCredits();
     			return true;
+    		case R.id.toggleSound:
+    			toggleSound();
+    			return true;
     		default:
     			return super.onOptionsItemSelected(item);
     	}
@@ -390,6 +360,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		playername = startingplayer;
 		showWhoseTurn();
 		showScore();
+		//Player making the first turn alternates, if vs computer then make the first move
 		if (startingplayer.equals("O") && computeropponent == true)
 			computerMove();
 	}
@@ -416,15 +387,19 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	}
 	
 	public void randomMove() {
+		//Dumb Computer AI
 		int randomsquare = rand.nextInt(squaresremaining.size());
-		//int randomsquare = (int) Math.ceil(Math.random() * (squaresremaining.size() - 1));
 		ImageButton button = (ImageButton) findViewById(squaresremaining.get(randomsquare));
     	button.performClick();		
 	}
 	
 	public boolean scanBoard(int targetvalue) {
+		//look for scenario and deal with it
+		//target = 2: look for a way to win
+		//target = -2: look for a way opponent can win and block
+		//target = 1: look for a place to build on
 		ImageButton button;
-		for (int q = 0; q < 8; q++) { //look for scenario and deal with it
+		for (int q = 0; q < 8; q++) { 
 			if (pointcount[q] == targetvalue) {
 				for (Integer squareid : rcd[q]) {
   					button = (ImageButton) findViewById(squareid);
@@ -448,6 +423,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		}
 		else { 
 		//smart AI 
+			//if first move, grab the center square
 			if (squaresremaining.size() == 9) {
       			button = (ImageButton) findViewById(R.id.MiddleMiddle);
       			button.performClick();
@@ -457,16 +433,17 @@ public class TicTacToe extends Activity implements SensorEventListener {
 				if (scanBoard(2)) return; //look for O about to win and complete
 				if (scanBoard(-2)) return; //look for X about to win and block
 				
-				//take center if possible
+				//take center if it's still available
 				button = (ImageButton) findViewById(R.id.MiddleMiddle);
       			if (button.getTag().equals((Integer) R.drawable.biggray)) {
       				button.performClick();
       				return;
       			}
       			
-      			if (scanBoard(1)) return; //look for O with one and add to it
+      			if (scanBoard(1)) return; //look for O with one and build on it
       			
-      			for (int c = 0; c < 4; c++) { //take corner if possible
+      			//take corner if possible
+      			for (int c = 0; c < 4; c++) { 
   					button = (ImageButton) findViewById(corners[c]);
   					if (button.getTag().equals((Integer) R.drawable.biggray)) {
   						button.performClick();
@@ -493,10 +470,6 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		toast.show();
 	}
  	
-	public static void playSound(int soundid) {
-	    if (!sound) return; // if sound is turned off no need to continue
-	    	sounds.play(soundid, 1, 1, 1, 0, 1);
-	}
 
 	public void buttonGlow(int winner) {
 		int glowcolor;
@@ -528,12 +501,39 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    editor.putInt("twins", tscore);
 	    editor.commit();
 	}
+	
+	public static void playSound(int soundid) {
+	    if (sound) 
+	    	sounds.play(soundid, 1, 1, 1, 0, 1);
+	}
+	
+	public void toggleSound() {		
+		sound = !sound; 
+		if (sound)
+			loadSounds();
+	    SharedPreferences settings = getSharedPreferences("PREF", 0);
+	    SharedPreferences.Editor editor = settings.edit();
+		editor.putBoolean("sound", sound);
+	    editor.commit();
+	}
+	
+	public void loadSounds() {		
+	    sounds = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+	    xbeep = sounds.load(this, R.raw.ttt_x, 1);
+	    obeep = sounds.load(this, R.raw.ttt_o, 1);
+	    toebeep = sounds.load(this, R.raw.toejam,1);
+	    gamewin = sounds.load(this, R.raw.gamewin, 1);
+	    gametie = sounds.load(this, R.raw.gametie, 1);
+	    complaugh = sounds.load(this, R.raw.computerlaugh, 1);
+	}
+	
 		  
 	public void loadGame(String lmoves, boolean lgameover, String lplayername, boolean lvscomputer, boolean ltoe, int lxwins, int lowins, int ltwins) { 
     	try{
-
-			String token = ",";
+    		//Loadgame plays through the recorded moves 
+			if(lmoves == "") return; //First time program runs
 			
+			//disable sound
 			boolean remsound = sound;
 			sound = false;
 	        	        
@@ -564,9 +564,8 @@ public class TicTacToe extends Activity implements SensorEventListener {
 			
 			startOver();
 			
-			String smoves = lmoves;
-			if(smoves == "") return;
-	        int[] convertedIntArray = StringToArrayConverter.convertTokenizedStringToIntArray(smoves, token);
+			String token = ",";
+	        int[] convertedIntArray = StringToArrayConverter.convertTokenizedStringToIntArray(lmoves, token);
 	        
 	        boolean toehold = toe;
 	        boolean comphold = computeropponent;
@@ -629,34 +628,32 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	}
 	
 	private void showCredits() {
+		/*Show credits popup window when trigged from menu.*/
 	    try {
-	    	//http://www.mobilemancer.com/2011/01/08/popup-window-in-android/
-	        //We need to get the instance of the LayoutInflater, use the context of this activity
 	        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	        //Inflate the view from a predefined XML layout
 	        View layout = inflater.inflate(R.layout.credits,(ViewGroup) findViewById(R.id.popup_credits));
 	        // create a 300px width and 470px height PopupWindow
 	        pwcredits = new PopupWindow(layout, 300, 470, true);
-	        
-//	        TextView tvcredits = (TextView) findViewById(R.id.tvcredits);      
-//	        tvcredits.setText("Squidwrench.org" +  "\r\n" +  "add your name" +  "\r\n" +  "Brian Neugebauer");
 	        // display the popup in the center
 	        pwcredits.showAtLocation(layout, Gravity.CENTER, 0, 0);
 	 
-	        layout.setOnClickListener(cancel_button_click_listener);
+	        layout.setOnClickListener(dismiss_credits);
 	 
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 	}
 	 
-	private OnClickListener cancel_button_click_listener = new OnClickListener() {
+	private OnClickListener dismiss_credits = new OnClickListener() {
+		/*Click anywhere to dismiss Credits popup window*/
 	    public void onClick(View v) {
 	        pwcredits.dismiss();
 	    }
 	};
 	
 	public void cleanToe() {
+		/*The Toe stays on the board until the next move is made.*/
 		squaresremaining.add(new Integer(toechosen));
 		squarestaken.remove(new Integer(toechosen));
 
@@ -667,6 +664,9 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	}
 
 	public void playToe() {
+		/*ToeJam is a mod of TicTacToe where a Toe drops every 3 moves to randomly squash one of the existing moves.
+		If TTT is played correctly, there will always be a tie. ToeJam adds the random factor to make it a game you can win.
+		The Toe occupies the square until it leaves, after the next move is made.*/
 	 	ImageButton button = (ImageButton) findViewById(toechosen);
 	 	int pvalue = 0;
 		if (button.getTag().equals((Integer) R.drawable.bigx)) 
