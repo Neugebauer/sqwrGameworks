@@ -29,7 +29,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dip"
-        android:text="Squidwrench.org"
+        android:text="Squidwrench.org/android"
         android:autoLink="all"
         android:textColor="#000000"
         android:textSize="10dp" />

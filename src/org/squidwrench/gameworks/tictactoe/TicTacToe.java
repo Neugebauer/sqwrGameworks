@@ -35,7 +35,7 @@ import android.widget.Toast;
 /*
 TiC Tac ToeJam
 Squidwrench.org 2012
-Brian Neugebauer,
+Brian Neugebauer, 
 Code for traditional game with 2 players, play vs computer, and ToeJam game
 */
 
