@@ -36,7 +36,7 @@ import android.widget.Toast;
 TiC Tac ToeJam
 Squidwrench.org 2012
 Brian Neugebauer, 
-Code for traditional game with 2 players, play vs computer, and ToeJam game
+Code for traditional game with 2 players, play vs computer, and ToeJam game 
 */
 
 public class TicTacToe extends Activity implements SensorEventListener {
@@ -70,7 +70,6 @@ public class TicTacToe extends Activity implements SensorEventListener {
     private static boolean sound = true;
     public Random rand = new Random();
     public boolean online = false;
-    //public final int buttonimages[] = {R.drawable.bigo, R.drawable.bigx, R.drawable.bigxxx, R.drawable.bigooo, R.drawable.bigtoejam};
     public int viewWidth = 0;
     public int viewHeight = 0;
     public int orient; //0 = vertical, 1 = horizontal
@@ -634,7 +633,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	        //Inflate the view from a predefined XML layout
 	        View layout = inflater.inflate(R.layout.credits,(ViewGroup) findViewById(R.id.popup_credits));
 	        // create a 300px width and 470px height PopupWindow
-	        pwcredits = new PopupWindow(layout, 300, 470, true);
+	        pwcredits = new PopupWindow(layout, 300, 470, true);		 
 	        // display the popup in the center
 	        pwcredits.showAtLocation(layout, Gravity.CENTER, 0, 0);
 	 

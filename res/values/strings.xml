@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="hello">Hello World, ThreeBy3Activity!</string>
     <string name="app_name">Tic Tac ToeJam</string>
-    <string name="unused">Unused</string>
-    <string name="you">You</string>
-    <string name="me">Me</string>
     <string name="startOver">Start Over</string>
     <string name="saveGame">Save Game</string>
     <string name="loadGame">Load Game</string>
     <string name="clearScore">Clear Score</string>
     <string name="credits">Credits</string>
     <string name="toggleSound">Toggle Sound ON/OFF</string>
+    <string name="version">1.0</string>
 
 </resources>
