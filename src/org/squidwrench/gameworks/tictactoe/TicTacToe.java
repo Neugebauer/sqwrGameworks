@@ -16,6 +16,7 @@ import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -35,7 +36,7 @@ import android.widget.Toast;
 /*
 TiC Tac ToeJam
 Squidwrench.org 2012
-Brian Neugebauer, 
+Brian Neugebauer, more names
 Code for traditional game with 2 players, play vs computer, and ToeJam game 
 */
 
@@ -66,10 +67,11 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	private SensorManager sensMgr;
 	private Sensor accelerometer;
     private static SoundPool sounds;
-    private static int xbeep, obeep, toebeep, gamewin, gametie, complaugh; 
+    private static int xbeep, obeep, toebeep, gamewin, gametie, complaugh, maybe; 
+    private int randsound[] = {0,0};
     private static boolean sound = true;
     public Random rand = new Random();
-    public boolean online = false;
+    public boolean computerTurn = false;
     public int viewWidth = 0;
     public int viewHeight = 0;
     public int orient; //0 = vertical, 1 = horizontal
@@ -206,14 +208,25 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		}
 	}
 	
-    //When button is clicked
+	
 	public void claimSquare(View view) {
+		claimSquare(view,false);
+	}
+	
+    //When button is clicked
+	public void claimSquare(View view, boolean fromComputer) {
+		if (computerTurn) {
+			if (!fromComputer) {
+				return;
+			}
+		}
 		if (gameover == true) {
 			startOver();
 		}
 		else {
 	    	ImageButton button = (ImageButton)view;
 	    	if(button.getTag().equals((Integer) R.drawable.biggray)) {
+	    		button.setClickable(false);
 	    		int pvalue;
 	    		int dvalue;
 	    		if (toe) {
@@ -255,14 +268,18 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		    			}
 		    			else {
 		    				oscore += 1; 
-		    				if (computeropponent == true)
-		    					playSound(complaugh);
+		    				if (computeropponent == true) {
+		    					//playSound(complaugh);
+		    					randomSound();
+		    				}
 		    				else
 		    					playSound(gamewin);
 		    			}
 		    			tv.setText("Player " + playername + " WINS!");
 		    			tvs.setText("Click Any Square To Start New Game");
+		    			buttonsClickable(true);
 		    			gameover = true;
+		    			return;
 		    		}
 		    		else {
 		    			if (moves == moveslimit) {
@@ -270,7 +287,9 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		    				tv.setText("Game Over: Tie");
 		    				tscore += 1;
 		    				tvs.setText("Click Any Square To Start New Game");
+		    				buttonsClickable(true);
 		    				gameover = true;
+		    				return;
 		    			}
 		    		}
 				}
@@ -280,8 +299,20 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    			playSound(obeep);
 	    		playername = (playername.equals("X")) ? "O" : "X";
 	    		showWhoseTurn();
-	    		if (playername.equals("O") && computeropponent == true)
-	    			computerMove();    		
+	    		if (playername.equals("O") && computeropponent == true) {
+	    			computerTurn = true;
+	    			//delay
+	    			Handler handler=new Handler();
+	    			final Runnable r = new Runnable()
+	    			{
+	    			    public void run() 
+	    			    {
+	    			    	computerMove();
+	    			    	computerTurn = false;
+	    			    }
+	    			};
+	    			handler.postDelayed(r, 1000);
+	    		}
 	    		else if (toe) {	
 	    			//The toe drops
 	    			if (moves == 3 || moves == 7 || moves == 11)
@@ -359,6 +390,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		playername = startingplayer;
 		showWhoseTurn();
 		showScore();
+		buttonsClickable(true);
 		//Player making the first turn alternates, if vs computer then make the first move
 		if (startingplayer.equals("O") && computeropponent == true)
 			computerMove();
@@ -387,9 +419,23 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	
 	public void randomMove() {
 		//Dumb Computer AI
-		int randomsquare = rand.nextInt(squaresremaining.size());
-		ImageButton button = (ImageButton) findViewById(squaresremaining.get(randomsquare));
-    	button.performClick();		
+		int zeroCheck = squaresremaining.size();
+		if (zeroCheck > 0) {
+			int randomsquare = rand.nextInt(squaresremaining.size());
+			ImageButton button = (ImageButton) findViewById(squaresremaining.get(randomsquare));
+			//button.performClick();
+			claimSquare(button,true);
+		}
+	}
+	
+	public void randomSound() {
+		//Random Computer Taunt
+		if (sound) {
+			int rsound = rand.nextInt(randsound.length);
+			popup(rsound);
+			popup(randsound[rsound]);
+			playSound(randsound[rsound]);	
+		}
 	}
 	
 	public boolean scanBoard(int targetvalue) {
@@ -403,7 +449,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 				for (Integer squareid : rcd[q]) {
   					button = (ImageButton) findViewById(squareid);
   					if (button.getTag().equals((Integer) R.drawable.biggray)) {
-  						button.performClick();
+  						claimSquare(button,true);
   						return true;
   					}	
 				}
@@ -425,7 +471,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 			//if first move, grab the center square
 			if (squaresremaining.size() == 9) {
       			button = (ImageButton) findViewById(R.id.MiddleMiddle);
-      			button.performClick();
+      			claimSquare(button,true);
       			return;
 			}
 			else {
@@ -435,7 +481,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 				//take center if it's still available
 				button = (ImageButton) findViewById(R.id.MiddleMiddle);
       			if (button.getTag().equals((Integer) R.drawable.biggray)) {
-      				button.performClick();
+      				claimSquare(button,true);
       				return;
       			}
       			
@@ -445,7 +491,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
       			for (int c = 0; c < 4; c++) { 
   					button = (ImageButton) findViewById(corners[c]);
   					if (button.getTag().equals((Integer) R.drawable.biggray)) {
-  						button.performClick();
+  						claimSquare(button,true);
   						return;
   					}	
       			}
@@ -524,6 +570,9 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    gamewin = sounds.load(this, R.raw.gamewin, 1);
 	    gametie = sounds.load(this, R.raw.gametie, 1);
 	    complaugh = sounds.load(this, R.raw.computerlaugh, 1);
+	    maybe = sounds.load(this, R.raw.maybecj, 1);
+	    randsound[0] = complaugh;
+	    randsound[1] = maybe;
 	}
 	
 		  
@@ -592,7 +641,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	            }
 	            else {
 	            	button = (ImageButton) findViewById(Math.abs(mov));
-	    	        button.performClick();
+	    	        claimSquare(button,true);
 	            }
 	        }
 	        
@@ -659,6 +708,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
     	ImageButton button = (ImageButton) findViewById(toechosen);
  		button.setBackgroundDrawable(getResources().getDrawable(R.drawable.biggray));
  		button.setTag(R.drawable.biggray);
+ 		button.setClickable(true);
  		playSound(toebeep);
 	}
 
