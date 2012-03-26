@@ -65,10 +65,10 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	private List<Integer> squarestaken = new ArrayList<Integer>(); //TL,TM,TR,ML,MM,MR,BL,BM,BR
 	private SensorManager sensMgr;
 	private Sensor accelerometer;
-    private static SoundPool sounds;
-    private static int xbeep, obeep, toebeep, gamewin, gametie, complaugh, maybe; 
+    private SoundPool sounds;
+    private int xbeep, obeep, toebeep, gamewin, gametie, complaugh, maybe; 
     private int randsound[] = {0,0};
-    private static boolean sound = true;
+    private boolean sound = true;
     private Random rand = new Random();
     private boolean computerTurn = false;
     private PopupWindow pwcredits;
@@ -525,7 +525,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	    editor.commit();
 	}
 	
-	public static void playSound(int soundid) {
+	public void playSound(int soundid) {
 	    if (sound) 
 	    	sounds.play(soundid, 1, 1, 1, 0, 1);
 	}
@@ -544,8 +544,6 @@ public class TicTacToe extends Activity implements SensorEventListener {
 		//Random Computer Taunt
 		if (sound) {
 			int rsound = rand.nextInt(randsound.length);
-			popup(rsound);
-			popup(randsound[rsound]);
 			playSound(randsound[rsound]);	
 		}
 	}
