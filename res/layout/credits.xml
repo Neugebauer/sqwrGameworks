@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/popup_credits"
+    android:id="@+id/popupCredits"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/graypopup"
@@ -72,6 +72,14 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:text="Joseph Apuzzo, Patrick Ladd, Stephen Yu, Joel Kelson"
+        android:autoLink="all"
+        android:textColor="#000000"
+        android:textSize="9dp" />
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
         android:text="Graphics: \nBrian Neugebauer \nclipartsfree.net (netalloy)"
         android:textColor="#000000"
@@ -81,7 +89,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
-        android:text="Sounds: \nfreesound.org (Samuel Lourenço, Joel Azzopardi, Pierre Cartoon Sounds, Cabeeno Rossley, notchfilter, johnnypanic)"
+        android:text="Sounds: \nChris Joslyn\nfreesound.org (Samuel Lourenço, Joel Azzopardi, Pierre Cartoon Sounds, Cabeeno Rossley, notchfilter, johnnypanic)\nBrian Neugebauer"
         android:textColor="#000000"
         android:textSize="8dp" />
     
