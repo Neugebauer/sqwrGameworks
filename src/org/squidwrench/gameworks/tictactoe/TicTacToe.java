@@ -76,6 +76,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
     private Random rand = new Random();
     private boolean computerTurn = false;
     private PopupWindow pwCredits;
+    private int displayWidth, displayHeight;
     
 	
     /** Called when the activity is first created. */
@@ -95,16 +96,16 @@ public class TicTacToe extends Activity implements SensorEventListener {
 
         //Get Dimensions of screen and size buttons based on that
 	    Display display = getWindowManager().getDefaultDisplay();
-	    int dwidth = display.getWidth();
-	    int dheight = display.getHeight();
+	    displayWidth = display.getWidth();
+	    displayHeight = display.getHeight();
 	    int squareSize;
-	    if (dheight > dwidth) {
+	    if (displayHeight > displayWidth) {
 	    	//vertical
-	    	squareSize = dwidth/3;
+	    	squareSize = displayWidth/3;
 	    }
 	    else {
 	    	//horizontal
-	    	squareSize = dheight/4;
+	    	squareSize = displayHeight/4;
 	    }
 	    ImageButton imagebutton;
 	    for (Integer squareid : squares) {
@@ -402,7 +403,7 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	}
 
 	public void onSensorChanged(SensorEvent event) {
-		if(event.values[0] > 5) {
+		if(event.values[0] > 8) {
 		  startOver();
 		}
 		return;
@@ -678,7 +679,9 @@ public class TicTacToe extends Activity implements SensorEventListener {
 	        //Inflate the view from a predefined XML layout
 	        View layout = inflater.inflate(R.layout.credits,(ViewGroup) findViewById(R.id.popupCredits));
 	        // create a 300px width and 470px height PopupWindow
-	        pwCredits = new PopupWindow(layout, 300, 470, true);		 
+	        int popupWidth = (int) (displayWidth * 0.6);
+	        int popupHeight = (int) (displayHeight * 0.6);
+	        pwCredits = new PopupWindow(layout, popupWidth, popupHeight, true);		 
 	        // display the popup in the center
 	        pwCredits.showAtLocation(layout, Gravity.CENTER, 0, 0);
 	 

@@ -64,7 +64,7 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Add Your name or nickname \nBrian Neugebauer \nMore Names"
+        android:text="Brian Neugebauer\nSean 'Thor' Swehla\nChris Joslyn"
         android:autoLink="all"
         android:textColor="#000000"
         android:textSize="10dp" />
@@ -72,7 +72,7 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Joseph Apuzzo, Patrick Ladd, Stephen Yu, Joel Kelson"
+        android:text="Joseph Apuzzo, Patrick Ladd, Joel Kelson, Stephen Yu, et al."
         android:autoLink="all"
         android:textColor="#000000"
         android:textSize="9dp" />
@@ -89,7 +89,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dip"
-        android:text="Sounds: \nChris Joslyn\nfreesound.org (Samuel Lourenço, Joel Azzopardi, Pierre Cartoon Sounds, Cabeeno Rossley, notchfilter, johnnypanic)\nBrian Neugebauer"
+        android:text="Sounds:\nBrian Neugebauer\nChris Joslyn\nfreesound.org (Samuel Lourenço, Joel Azzopardi, Pierre Cartoon Sounds, Cabeeno Rossley, notchfilter, johnnypanic)"
         android:textColor="#000000"
         android:textSize="8dp" />
     
